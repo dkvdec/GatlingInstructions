@@ -121,11 +121,14 @@ val scn = scenario("Scenario Name") // A scenario is a chain of requests and pau
 
 <details>
     <summary>Примеры запросов</summary>
-    
+
+Get запрос    
 ```
 .exec(http("request_1")
   .get("/"))
 ```
+
+Post запрос
 ```
 .exec(http("request_10") // Here's an example of a POST request
   .post("/computers")
@@ -143,10 +146,32 @@ val scn = scenario("Scenario Name") // A scenario is a chain of requests and pau
 
 <details>
     <summary>Примеры инжекторов</summary>
-    
+
+Открытая модель
 ```
-setUp(scn.inject(atOnceUsers(1)).protocols(httpProtocol))
+setUp(
+  scn.inject(
+    nothingFor(4.seconds),
+    atOnceUsers(10),
+    rampUsers(10).during(5.seconds),
+    constantUsersPerSec(20).during(15.seconds),
+    constantUsersPerSec(20).during(15.seconds).randomized,
+    rampUsersPerSec(10).to(20).during(10.minutes),
+    rampUsersPerSec(10).to(20).during(10.minutes).randomized,
+    heavisideUsers(1000).during(20.seconds)
+  ).protocols(httpProtocol)
+)
 ```
+Закрытая модель
+```
+setUp(
+  scn.inject(
+    constantConcurrentUsers(10).during(10.seconds),
+    rampConcurrentUsers(10).to(20).during(10.seconds)
+  )
+)
+```
+
 </details>
 
 </details>
