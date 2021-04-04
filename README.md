@@ -32,7 +32,7 @@ Gatling поддерживает 64битную версию OpenJDK 8 и OpenJD
 
 ![structure](img/structure.png)
     
-1) Проект Demo Maven.
+1) Название проекта.
 2) Основные ресурсы проекта.
 3) Основные настройки:
   - `gatling.conf` основные настройки Gatling.
@@ -40,7 +40,7 @@ Gatling поддерживает 64битную версию OpenJDK 8 и OpenJD
 4) Директория scala содержит пакеты с тестами. Так же есть несколько дополнительных файлов для совместимости с IDE.
 5) Директория для хранения собранного проекта.
 6) В директории генерируются отчеты по логу запуска (тот что вы видите в консоли).
-7) Настройки Maven.
+7) Базовый модуль Maven.
     
 </details> 
 
@@ -81,10 +81,12 @@ val httpProtocol = http
 ```
 val scn = scenario("Scenario Name") // A scenario is a chain of requests and pauses
     .exec(http("request_1")
-      .get("/"))
+      .get("/")
+      .check(status.is(200)))
     .pause(7) // Note that Gatling has recorder real time pauses
     .exec(http("request_2")
-      .get("/computers?f=macbook"))
+      .get("/computers?f=macbook")
+      .check(status.not(404), status.not(500)))
     .pause(2)
     .exec(http("request_3")
       .get("/computers/6"))
@@ -114,6 +116,11 @@ val scn = scenario("Scenario Name") // A scenario is a chain of requests and pau
       .formParam("""discontinued""", """""")
       .formParam("""company""", """37"""))
 ```
+exec — метод, по которому нагрузочный профиль выполняет единичное действие. Например, отправляет запрос, открывает сокет, отправляет сообщение по сокету или выполняет анонимную функцию.
+
+http(samplerName: String).(get|post|put…) отправляет необходимый запрос http. В функции метода http указываем относительный путь. Базовый url мы уже указали при настройке конфига http. Далее указываем параметры запроса — queryParam | formParam.
+
+check проверяет ответ. Можно проверить заголовок ответа. Мы также используем check, когда хотим проверить и сохранить тело ответа или его отдельные элементы.
 </details>
 
 ### Запрос
