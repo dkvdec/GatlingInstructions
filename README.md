@@ -4,14 +4,14 @@
 <details>
     <summary>Предварительные требования</summary>
     
-###Java Version
+### Java Version
 Gatling поддерживает 64битную версию OpenJDK 8 и OpenJDK 11 с HotSpot.
     
 <!-- ###Scala Version
 Для Gatling 3.5 требуется Scala 2.13. Для версий Gatling с 3.0 до 3.4 требуется Scala 2.12.
 -->
    
-###Build Tool
+### Build Tool
 В зависимости от инструмента скачайте необходимую версию демо проекта.
 В данном примере мы будем использовать Maven.
 
