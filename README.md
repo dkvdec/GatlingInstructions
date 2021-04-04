@@ -45,14 +45,14 @@ Gatling поддерживает 64битную версию OpenJDK 8 и OpenJD
 
 <details>
     <summary>Строение симуляции</summary>
-    
+
+Симуляция это инструмент проведения нагрузочного тестирования. Тут описывается всё, начиная от фидеров и сценариев действия пользователей, до подачи загрузки.    
 Обычно симуляция состоит из 4 частей.
 
 ### Протокол
-Здесь происходит описание протокола в виде объявления URL и заголовков.
-Gatling HTTP позволяет загружать тестовые веб-приложения, веб-службы или веб-сайты. Он поддерживает HTTP и HTTPS практически со всеми существующими функциями распространенных браузеров, такими как кеширование, файлы cookie, перенаправление и т. Д.
+Здесь задаются нужные хедеры, базовый URL и другие настройки: например, указываем прокси или отключаем кеширование.
 
-[Подробнее](https://gatling.io/docs/current/http/http_protocol/)
+[Подробнее о протоколе](https://gatling.io/docs/current/http/http_protocol/)
 
 <details>
     <summary>Пример протокола</summary>
@@ -66,8 +66,16 @@ val httpProtocol = http
     .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
 ```
 </details>
+
 ### Сценарий
 Сценарий выполнения запросов.
+Тут подробно описываются последовательные действия пользователей, так же есть возможность ветвления и прерывания действий в зависимости от ответа.
+
+[Подробнее о сценарии](https://gatling.io/docs/current/general/scenario/)
+
+<details>
+    <summary>Пример сценария</summary>
+    
 ```
 val scn = scenario("Scenario Name") // A scenario is a chain of requests and pauses
     .exec(http("request_1")
@@ -104,9 +112,16 @@ val scn = scenario("Scenario Name") // A scenario is a chain of requests and pau
       .formParam("""discontinued""", """""")
       .formParam("""company""", """37"""))
 ```
+</details>
 
-### Действие
-Запрос.
+### Запрос
+Здесь описывается одно из действий пользователя. Тут же можно генерить тела для POST запросов и задавать проверку ответов.
+
+[Подробнее о запросах](https://gatling.io/docs/current/http/http_request/)
+
+<details>
+    <summary>Примеры запросов</summary>
+    
 ```
 .exec(http("request_1")
   .get("/"))
@@ -119,11 +134,20 @@ val scn = scenario("Scenario Name") // A scenario is a chain of requests and pau
   .formParam("""discontinued""", """""")
   .formParam("""company""", """37"""))
 ```
+</details>
 
 ### Инжектор
-```
+Инжектор пользователей. Отвечает за ввод пользователей в сценарий. Можно выбирать открытую либо закрытую модели подачи нагрузки.
 
+[Подробднее об инжекторе](https://gatling.io/docs/current/general/simulation_setup/)
+
+<details>
+    <summary>Примеры инжекторов</summary>
+    
 ```
+setUp(scn.inject(atOnceUsers(1)).protocols(httpProtocol))
+```
+</details>
 
 </details>
 
