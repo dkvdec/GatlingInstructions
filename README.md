@@ -43,6 +43,16 @@ Gatling поддерживает 64битную версию OpenJDK 8 и OpenJD
     
 </details> 
 
+<details>
+    <summary>Строение симуляции</summary>
+    
+</details>
+
+<details>
+    <summary>Поключение Influx + Grafana</summary>
+    
+</details>
+
 Simple showcase of a maven project using the gatling-maven-plugin.
 
 To test it out, simply execute the following command:
