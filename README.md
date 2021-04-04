@@ -46,8 +46,9 @@ Gatling поддерживает 64битную версию OpenJDK 8 и OpenJD
 <details>
     <summary>Строение симуляции</summary>
 
-Симуляция это инструмент проведения нагрузочного тестирования. Тут описывается всё, начиная от фидеров и сценариев действия пользователей, до подачи загрузки.    
-Обычно симуляция состоит из 4 частей.
+## Симуляция
+Симуляция это инструмент проведения нагрузочного тестирования. Тут описывается всё, начиная от фидеров и сценариев действий пользователей, до подачи загрузки.    
+Обычно симуляция состоит из 4 частей. Для больших проектов с множеством сценариев лучше хранить эти части отдельно.
 
 ### Протокол
 Здесь задаются нужные хедеры, базовый URL и другие настройки: например, указываем прокси или отключаем кеширование.
@@ -177,16 +178,74 @@ setUp(
 </details>
 
 <details>
-    <summary>Поключение Influx + Grafana</summary>
+    <summary>Запуск тестирования</summary>
+
+Для запуска одной симуляции используйте команду:
+    
+    $mvn gatling:test -Dgatling.simulationClass=computerdatabase.BasicSimulation
+    
+Либо команда для запуска всех симуляций одновременно:
+    
+    $mvn gatling:test
     
 </details>
 
-Simple showcase of a maven project using the gatling-maven-plugin.
+<details>
+    <summary></summary>
+    
+</details>
 
-To test it out, simply execute the following command:
+<details>
+    <summary>Мониторинг Gatling в реальном времени</summary>
+    
+Для мониторинга в реальном времени нам потребуется InfluxDB и Grafana.
 
-    $mvn gatling:test -Dgatling.simulationClass=computerdatabase.BasicSimulation
+### Настройка Gatling
 
-or simply:
+Для начала откроем `gatling.conf` и дойдём до раздела `data`.
+раскомментируем `writers` и добавим в строку `graphite`.
+```
+writers = [console, file, graphite]
+```
+Так же раскомментируем всю секцию `graphite`. Не забудем указать `host` и `port` базы данных influx.
+```
+graphite {
+      light = false              # only send the all* stats
+      host = "127.0.0.1"         # The host where the Carbon server is located
+      port = 2003                # The port to which the Carbon server listens to (2003 is default for plaintext, 2004 is default for pickle)
+      protocol = "tcp"           # The protocol used to send data to Carbon (currently supported : "tcp", "udp")
+      rootPathPrefix = "gatling" # The common prefix of all metrics sent to Graphite
+      bufferSize = 8192          # Internal data buffer size, in bytes
+      writePeriod = 1            # Write period, in seconds
+}
+```
 
-    $mvn gatling:test
+### Настройка InfluxDB
+Откроем файл `influxdb.conf`(по умолчанию находится в `/etc/influxdb/influxdb.conf`) и дойдём до секции:
+```
+### [[graphite]]
+###
+### Controls one or many listeners for Graphite data.
+```
+И добавим после него:
+```
+[[graphite]]
+  # Determines whether the graphite endpoint is enabled.
+  enabled = true
+  database = "gatlingdb"
+  retention-policy = ""
+  bind-address = ":2003"
+  protocol = "tcp"
+  consistency-level = "one"
+
+  templates = [
+                "gatling.*.*.*.* measurement.simulation.request.status.field",
+                "gatling.*.users.*.* measurement.simulation.measurement.request.field"
+  ]
+```
+
+### Настройка Grafana
+
+Для Grafana требуется только добавить новый dashboard который вы можете сделать сами, либо найти готовый. [Например](https://github.com/gatling/gatling/blob/master/src/sphinx/realtime_monitoring/code/gatling.json). И подключить к нему вашу InfluxDB в качестве `datasource`.
+    
+</details>
